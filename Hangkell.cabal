@@ -2,12 +2,12 @@ name:                Hangkell
 version:             0.1.0.0
 -- synopsis:
 -- description:
-homepage:            https://github.com/githubuser/Hangkell#readme
+homepage:            https://github.com/ob-fun-ws17/studienarbeit-hangkell
 license:             BSD3
 license-file:        LICENSE
-author:              Author name here
-maintainer:          example@example.com
-copyright:           2017 Author name here
+author:              Florian Hageneder
+maintainer:          fhagened@hm.edu
+copyright:           2017 Florian Hageneder
 category:            Web
 build-type:          Simple
 extra-source-files:  README.md
@@ -46,4 +46,4 @@ test-suite Hangkell-test
 
 source-repository head
   type:     git
-  location: https://github.com/githubuser/Hangkell
+  location: https://github.com/ob-fun-ws17/studienarbeit-hangkell
