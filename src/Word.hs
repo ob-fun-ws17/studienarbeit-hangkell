@@ -13,7 +13,7 @@ tryChar ::
   Char -- ^ The char the player played
   -> String -- ^ The word that is being played3
   -> Bool -- ^ wether guessed char was right
-tryChar try word = null charPositions
+tryChar try solution = null $ charPositions try solution
 
 -- | Returns positions of a char in the given word.
 charPositions ::
