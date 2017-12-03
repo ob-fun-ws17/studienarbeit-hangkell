@@ -1,7 +1,7 @@
 name:                Hangkell
-version:             0.1.0.0
-synopsis:            An project for the fp lecture at hm.edu
-description:         An hangman server to play on the network via a RESTful service
+version:             0.1.1
+synopsis:            Like Hangman but online!
+description:         An Hangman server to play on the network via a RESTful service.
 homepage:            https://github.com/ob-fun-ws17/studienarbeit-hangkell
 license:             BSD3
 license-file:        LICENSE
