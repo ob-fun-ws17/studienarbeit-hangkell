@@ -19,7 +19,7 @@ type SolutionWord = [(Char, Bool)]
 {- | Creates a SolutionWord from a given String
 
 >>> createSolutionWord "abc"
-[('a', false), ('b', false), ('b', false)]
+[('a', False), ('b', False), ('b', False)]
 -}
 createSolutionWord ::
   String -- ^ String to play with

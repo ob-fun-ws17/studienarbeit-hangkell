@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -F -pgmF hspec-discover #-}
+
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE OverloadedStrings #-}
 module Main (main) where
