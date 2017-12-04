@@ -1,9 +1,14 @@
 {-|
 Module      : Hangman Word Module
 Description : Library to handle a hangman solution word.
+Copyright   : >implying
+License     : >implying
+Maintainer  : Florian Hageneder
+Stability   : none
+Portability : what?
 -}
 module Word
-    (tryChar, solveChar) where
+    (SolutionWord, createSolutionWord, tryChar, solveChar) where
 
 import Data.Char(toLower)
 import Data.List

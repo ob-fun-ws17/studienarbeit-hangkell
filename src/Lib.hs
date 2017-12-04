@@ -1,6 +1,15 @@
 {-# LANGUAGE DataKinds       #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeOperators   #-}
+{-|
+Module      : Library
+Description : Library to handle RESTful logic.
+Copyright   : >implying
+License     : >implying
+Maintainer  : Florian Hageneder
+Stability   : none
+Portability : what?
+-}
 module Lib
     ( startApp
     , app
