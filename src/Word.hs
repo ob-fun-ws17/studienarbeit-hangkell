@@ -18,8 +18,8 @@ type SolutionWord = [(Char, Bool)]
 -}
 createSolutionWord ::
   String -- ^ String to play with
-  SolutionWord -- ^ Solution to create a game with
-createSolutionWord word = map flip word (\char -> (char, false))
+  -> SolutionWord -- ^ Solution to create a game with
+createSolutionWord = map (\char -> (char, False))
 
 {- | Checks if a given char is in the word.
 
@@ -38,7 +38,7 @@ tryChar try solution = null $ elemIndices try (map fst solution)
 [('a', True), ('b', True)]
 -}
 solveChar ::
-  SolutionWord -- ^ Current game state
-  -> Char -- ^ Char that player tries to add
+  Char -- ^ Char that player tries to add
+  -> SolutionWord -- ^ Current game state
   -> SolutionWord -- ^ New state of progress
-solveChar solution try = map (\(char, state) -> (char, state || toLower char == toLower try)) solution
+solveChar try = map (\(char, state) -> (char, state || toLower char == toLower try))
