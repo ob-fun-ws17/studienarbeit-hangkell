@@ -59,3 +59,13 @@ showSolution ::
   SolutionWord -- ^ SolutionWord to show
   -> String -- ^ Stringified version of the solution
 showSolution = map (\sol -> if snd sol then fst sol else placeholder)
+
+{- | Checks if there are unknown chars in a solutionWord left.
+
+>>> isPlayable [('a', True)]
+False
+-}
+isPlayable ::
+  SolutionWord -- ^ Word to check
+  -> Bool -- ^ Wether the word is still playable
+isPlayable word = not . null $ filter snd word

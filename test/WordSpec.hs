@@ -25,3 +25,12 @@ spec = do
         showSolution [] `shouldBe` []
     it "converts false chars to placeholder" $
         showSolution [('a', False)] `shouldBe` [Word.placeholder]
+    it "converts longer word properly" $
+        showSolution [('a', True), ('b', False), ('a', True)] `shouldBe` "a_a"
+  describe "isPlayable" $ do
+    it "handles empty solution" $
+        isPlayable [] `shouldBe` False
+    it "rejects solved solution" $
+        isPlayable [('a', True), ('b', True), ('c', True)] `shouldBe` False
+    it "confirms unsolved solution" $
+        isPlayable [('a', True), ('b', False), ('c', True)] `shouldBe` True
