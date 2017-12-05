@@ -3,11 +3,13 @@
 ___
 
 ## Was ist Hangkell
-Hangkell ist ein **Hang**man Server in Has**kell**.  
+<img src="logo.png" style="float:left"> <!-- let text float around -->
+Hangkell ist ein **Hang**man Server in Has**kell**.
 Über einen RESTful Service kann über ein Netzwerk gemeinsam Hangman gespielt werden.  
 
 Entstand ist dieses Programm als Studienarbeit für *Funktionale Programmierung im WS 17/18*.
 
+<div style="clear:left"> <!-- get this under the image -->
 ## Verwendung
 ```Bash
 stack build
