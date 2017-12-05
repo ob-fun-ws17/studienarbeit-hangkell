@@ -7,11 +7,13 @@ Maintainer  : Florian Hageneder
 Stability   : none
 Portability : what?
 -}
-module Word
-    (SolutionWord, createSolutionWord, tryChar, solveChar) where
+module Word where
 
 import Data.Char(toLower)
 import Data.List
+
+-- | Placeholder for unsolved chars in solution
+placeholder = '_' :: Char
 
 -- | Solution of a Hangman game. Unguessd chars are marked with a False.
 type SolutionWord = [(Char, Bool)]
@@ -47,3 +49,13 @@ solveChar ::
   -> SolutionWord -- ^ Current game state
   -> SolutionWord -- ^ New state of progress
 solveChar try = map (\(char, state) -> (char, state || toLower char == toLower try))
+
+{- | Converts a solution into a String
+
+>>> showSolution [('a', True), ('b', False)]
+"a_"
+-}
+showSolution ::
+  SolutionWord -- ^ SolutionWord to show
+  -> String -- ^ Stringified version of the solution
+showSolution = map (\sol -> if snd sol then fst sol else placeholder)

@@ -20,3 +20,8 @@ spec = do
         tryChar 'a' [('b', False)] `shouldBe` False
     it "finds char in word" $
         tryChar 'a' [('a', False), ('b', False), ('a', False)] `shouldBe` True
+  describe "showSolution" $ do
+    it "handles empty solution" $
+        showSolution [] `shouldBe` []
+    it "converts false chars to placeholder" $
+        showSolution [('a', False)] `shouldBe` [Word.placeholder]
