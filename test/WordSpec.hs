@@ -5,7 +5,7 @@ import Word
 import Test.Hspec
 
 spec :: Spec
-spec = describe "Word" $ do
+spec = do
   describe "createSolutionWord" $ do
     it "creates empty word" $
         createSolutionWord "" `shouldBe` []
@@ -13,8 +13,10 @@ spec = describe "Word" $ do
         createSolutionWord "a" `shouldBe` [('a', False)]
     it "creates longer words" $
         createSolutionWord "abc" `shouldBe` [('a', False), ('b', False), ('c', False)]
---  describe "tryChar" $ do
---    it "ignores empty solution" $
---        tryChar 'a' [] `shouldBe` False
---    it "reject false single char" $
---        tryChar 'a' [('b', False)] `shouldBe` False
+  describe "tryChar" $ do
+    it "ignores empty solution" $
+        tryChar 'a' [] `shouldBe` False
+    it "reject false single char" $
+        tryChar 'a' [('b', False)] `shouldBe` False
+    it "finds char in word" $
+        tryChar 'a' [('a', False), ('b', False), ('a', False)] `shouldBe` True

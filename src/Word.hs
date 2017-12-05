@@ -35,7 +35,7 @@ tryChar ::
   Char -- ^ The char the player played
   -> SolutionWord -- ^ The word that is being played3
   -> Bool -- ^ wether guessed char was right
-tryChar try solution = null $ elemIndices try (map fst solution)
+tryChar try solution = not . null $ elemIndices try (map fst solution)
 
 {- | Applys a guess on the solution.
 
