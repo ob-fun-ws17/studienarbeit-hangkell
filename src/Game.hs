@@ -20,11 +20,11 @@ type Guesses = Int
 type Alive = Bool
 type Player = (Id, Secret, Guesses, Alive)
 
-type Game = (SolutionWord -- ^ The word this game is about to solve
-            , [Player] -- ^ All players participating at the game
-            , Bool -- ^ Is game still active/running
-            , Player -- ^ Player currently at turn
-            , String -- ^ All guessed chars
+type Game = (SolutionWord {- The word this game is about to solve -}
+            , [Player] {- All players participating at the game -}
+            , Bool {- Is game still active/running -}
+            , Player {- Player currently at turn -}
+            , String {- All guessed chars -}
             )
 
 {- | Returns the player which is currently at turn.
@@ -46,7 +46,7 @@ nextPlayerAlive ::
   -> Player
 nextPlayerAlive (_, players, _, turn@(turnId,_,_,_), _) = let
   index = fromMaybe (-1) (findIndex (\(curID,_,_,_) -> curID == turnId) players)
-  in head $ playersAlive ((\(a, b) -> b ++ a) (splitAt index players)) 
+  in head $ playersAlive ((\(a, b) -> b ++ a) (splitAt index players))
 
 trimPlayers ::
   Game
