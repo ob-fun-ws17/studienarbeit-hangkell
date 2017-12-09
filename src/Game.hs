@@ -22,6 +22,22 @@ type Game = (SolutionWord {- The word this game is about to solve -}
             , String {- All guessed chars -}
             )
 
+makeATurn::
+  Player -- ^ The player who wants to make a turn
+  -> Char -- ^ The char to try
+  -> Game -- ^ The game to operate on
+  -> Game -- ^ The updated game
+makeATurn _ _ g@(_,_,False,_,_) = g -- No turn on ended game
+makeATurn p@(pId, pSec, pFailures, pAlive) char g@(solution, players, running, playerAtTurn, guessed)
+  | p /= playerAtTurn = g  -- Only the player at turn
+  | not pAlive = (solution, players, running, nextPlayerAlive g, guesses)-- player at turn should not be dead
+  | char elem guessed = g -- Only chars not tried until now -- failure!
+  | otherwise = if tryChar char solution
+      then  (solveChar char solution, players, isPlayable $ solveChar char solution, nextPlayerAlive g, guessed ++ char)
+      else let newPlayers = updatePlayers (wrongGuess p) players
+                in (solution, newPlayers, running, nextPlayerAlive newPlayers, guessed ++ char)
+
+
 {- | Returns the player which is currently at turn. -}
 playerAtTurn ::
   Game -- ^ Game to check
@@ -32,7 +48,7 @@ playerAtTurn (_,_,state,p,_)
 
 {- returns the next alive player that is at turn.-}
 -- Possibly crashes when no one is alive!!
-nextPlayerAlive ::
+nextPlayerAlive∷
   Game
   -> Player
 nextPlayerAlive (_, players, _, turn@(turnId,_,_,_), _) =
@@ -41,7 +57,13 @@ nextPlayerAlive (_, players, _, turn@(turnId,_,_,_), _) =
 
 -- * Helper
 
-trimPlayers ::
+trimPlayers∷
   Game
   -> Game
 trimPlayers (a, players, c, d, e) = (a, filter (\(_,_,_, alive) -> alive) players , c, d, e)
+
+updatePlayers∷
+  Player -- ^ The updated player
+  -> [Player] -- ^ Old players
+  -> [Player] -- ^ updated players
+updatePlayers x@(pid,_,_,_) = map (\p@(cid,_,_,_) -> if cid == pid then x else p)

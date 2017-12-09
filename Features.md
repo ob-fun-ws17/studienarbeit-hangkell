@@ -5,6 +5,7 @@
 - Multiplayer
 - Häufige Fehlversuche auf den Key des Spielers töten ihn (?)
 - Ganzes Wort lösen
+- Multisession
 
 ## Geplant
 [x] Wörter können angelegt werden
