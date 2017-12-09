@@ -68,4 +68,4 @@ False
 isPlayable ::
   SolutionWord -- ^ Word to check
   -> Bool -- ^ Wether the word is still playable
-isPlayable word = not . null $ filter snd word
+isPlayable word = not . null $ filter (not . snd) word
