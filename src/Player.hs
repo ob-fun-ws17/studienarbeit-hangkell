@@ -38,5 +38,6 @@ playersAlive = filter (\p@(_,_,_, state) -> state)
 wrongGuess ::
   Player -- ^ player that guessed wrong
   -> Player -- ^ updated player
+wrongGuess p@(_, _, _, False) = p
 wrongGuess (a, b, failures, alive) = let newfailures = failures + 1
                                         in (a, b, newfailures, newfailures < maxFaliures)
