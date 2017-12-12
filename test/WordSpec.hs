@@ -20,6 +20,17 @@ spec = do
         tryChar 'a' [('b', False)] `shouldBe` False
     it "finds char in word" $
         tryChar 'a' [('a', False), ('b', False), ('a', False)] `shouldBe` True
+  describe "solveChar" $ do
+    it "solves empty solutions" $
+        solveChar 'a' [] `shouldBe` []
+    it "solves single char solution" $
+        solveChar 'a' [('a', False)] `shouldBe` [('a', True)]
+    it "solves complex unsolved word" $
+        solveChar 'a' [('a', False), ('b', False), ('a', False)] `shouldBe` [('a', True), ('b', False), ('a', True)]
+    it "solves complex partly solved word" $
+        solveChar 'a' [('a', False), ('b', True), ('a', False)] `shouldBe` [('a', True), ('b', True), ('a', True)]
+    it "doesn't solve solved solution" $
+        solveChar 'a' [('a', True), ('b', True), ('a', True)] `shouldBe`  [('a', True), ('b', True), ('a', True)]
   describe "showSolution" $ do
     it "handles empty solution" $
         showSolution [] `shouldBe` []
