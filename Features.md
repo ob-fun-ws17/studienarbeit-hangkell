@@ -6,6 +6,8 @@
 - Häufige Fehlversuche auf den Key des Spielers töten ihn (?)
 - Ganzes Wort lösen
 - Multisession
+- Anmeldung der Spieler nur vor dem Spieler
+- Beende das Spiel, wenn der letzte Spieler tot ist
 
 ## Geplant
 [x] Wörter können angelegt werden

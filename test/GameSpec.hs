@@ -2,14 +2,22 @@
 module GameSpec (spec) where
 
 import Game
+import Player
 import Test.Hspec
+
+testGame :: Game = ([('a', False)],
+            [(0, "", Player.maxFaliures - 1, True)],
+            True,
+            (0, "", Player.maxFaliures - 1, True),
+            "b"
+          );
 
 spec :: Spec
 spec = do
   describe "nothing" $
     it "creates simple Player" $
         False `shouldBe` False
-  describe "updatePlayers" $ 
-    it "updates empty list" $
-        updatePlayers (1, "a", 1, True) [(0, "", 0, True), (1, "", 0, False)]
-          `shouldBe` [(0, "", 0, True), (1, "a", 1, True)]
+--  describe "updatePlayers" $
+--    it "updates empty list" $
+--        updatePlayers (1, "a", 1, True) [(0, "", 0, True), (1, "", 0, False)]
+--          `shouldBe` [(0, "", 0, True), (1, "a", 1, True)]
