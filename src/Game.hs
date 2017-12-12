@@ -7,8 +7,7 @@ Maintainer  : Florian Hageneder
 Stability   : none
 Portability : what?
 -}
-module Game
-  (Game, playerAtTurn, nextPlayerAlive) where
+module Game where
 
 import Word
 import Player
