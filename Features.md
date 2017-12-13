@@ -14,4 +14,9 @@
 [x] Wörter können gelöst werden
 [x] Spieler können angelegt werden
 [x] Spieler können Fehlversuch erhalten und sterben u.U.
+[x] Satzzeichen werden automatisch gelöst
 [ ] Spieler haben einen Key
+[ ] Ganzes Lösungswort kann auf einmal gelöst werden
+[ ] Check ob Spielzug das Spiel beendet hat
+[ ] Spielzug via API
+[ ] Spiel via API anlegen
