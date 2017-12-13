@@ -7,7 +7,7 @@ Maintainer  : Florian Hageneder
 Stability   : none
 Portability : what?
 -}
-module Game (Game, makeATurn, playerAtTurn) where
+module Game (Game, makeATurn, playerAtTurn, nextPlayerAlive) where
 --module Game where
 
 import Word
@@ -29,12 +29,9 @@ makeATurn::
   -> (Game, Bool) -- ^ The updated game
 makeATurn p@(pId, pSec, pFailures, pAlive) char g@(solution, players, running, playerAtTurn, guessed)
   | not (validTurn p char g) = (g, False)
-  | tryChar char solution =
-        let newSolution = solveChar char solution -- Char was solved in game
-            in ((newSolution, players, isPlayable newSolution, nextPlayerAlive g, guessed ++ [char]), True)
-  | otherwise =
-        let newPlayers = updatePlayers (wrongGuess p) players -- Char was solved but not in solution
-            in ((solution, newPlayers, running, nextPlayerAlive (solution, newPlayers, running, playerAtTurn, guessed), guessed ++ [char]), True)
+  | char `elem` guessed = (playersMistake p char g, True)
+  | tryChar char solution = (playersSuccess p char g, True)
+  | otherwise = (playersMistake p char g, True)
 
 {- | Returns the player which is currently at turn. -}
 playerAtTurn ::
@@ -51,7 +48,7 @@ nextPlayerAlive::
   -> Player
 nextPlayerAlive (_, players, _, turn@(turnId,_,_,_), _) =
   let index = fromMaybe (-1) (findIndex (\(curID,_,_,_) -> curID == turnId) players)
-      in head $ playersAlive ((\(a, b) -> b ++ a) (splitAt index players))
+      in head $ playersAlive ((\(a, b) -> b ++ a) (splitAt (index + 1) players))
 
 -- * Helper
 
@@ -60,11 +57,10 @@ validTurn ::
   -> Char
   -> Game
   -> Bool
-validTurn _ _ g@(_,_,False,_,_) = False -- No turn on ended game
-validTurn (_, _, _, False) _ _ = False -- player at turn should not be dead
-validturn p@(_, _, _, pAlive) char g@(solution, players, running, playerAtTurn, guessed)
+validTurn p@(a, b, c, alive) char g@(solution, players, running, playerAtTurn, guessed)
+  | not running = False -- No turn on ended game
+  | not alive = False -- player at turn should not be dead
   | p /= playerAtTurn = False -- Only the player at turn
-  | char `elem` guessed = False-- Only chars not tried until now -- failure!
   | otherwise = True
 
 trimPlayers::
@@ -78,3 +74,23 @@ updatePlayers::
   -> [Player] -- ^ Old players
   -> [Player] -- ^ updated players
 updatePlayers x@(pid,_,_,_) = map (\p@(cid,_,_,_) -> if cid == pid then x else p)
+
+playersMistake ::
+  Player
+  -> Char
+  -> Game
+  -> Game
+playersMistake p c g@(solution, players, running, atTurn, guesses) =
+  let newPlayers = updatePlayers (wrongGuess p) players;
+      newGuesses = if c `elem` guesses then guesses else guesses ++ [c];
+  in let tmpGame = (solution, newPlayers, running, atTurn, newGuesses);
+     in (solution, newPlayers, running, nextPlayerAlive tmpGame, newGuesses)
+
+playersSuccess ::
+ Player
+ -> Char
+ -> Game
+ -> Game
+playersSuccess p c g@(solution, players, running, atTurn, guesses) =
+  let tmpGame = (solution, players, running, atTurn, guesses);
+  in (solution, players, running, nextPlayerAlive tmpGame, guesses ++ [c])
