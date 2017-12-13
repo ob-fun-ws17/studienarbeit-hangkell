@@ -7,7 +7,7 @@ Maintainer  : Florian Hageneder
 Stability   : none
 Portability : what?
 -}
-module Game (Game, makeATurn, playerAtTurn) where 
+module Game (Game, makeATurn, playerAtTurn) where
 --module Game where
 
 import Word
@@ -27,16 +27,13 @@ makeATurn::
   -> Char -- ^ The char to try
   -> Game -- ^ The game to operate on
   -> (Game, Bool) -- ^ The updated game
-makeATurn _ _ g@(_,_,False,_,_) = (g, False) -- No turn on ended game
 makeATurn p@(pId, pSec, pFailures, pAlive) char g@(solution, players, running, playerAtTurn, guessed)
-  | p /= playerAtTurn = (g, False)  -- Only the player at turn
-  | not pAlive = ((solution, players, running, nextPlayerAlive g, guessed), False) -- player at turn should not be dead
-  | char `elem` guessed = (g, False) -- Only chars not tried until now -- failure!
+  | not (validTurn p char g) = (g, False)
   | otherwise = if tryChar char solution
-      then  ((solveChar char solution, players, isPlayable $ solveChar char solution, nextPlayerAlive g, guessed ++ [char]), True) -- Char was solved in game
-      else let newPlayers = updatePlayers (wrongGuess p) players
-                in ((solution, newPlayers, running, nextPlayerAlive (solution, newPlayers, running, playerAtTurn, guessed), guessed ++ [char]), True) -- Char was solved but not in solution
-
+      then let newSolution = solveChar char solution -- Char was solved in game
+               in ((newSolution, players, isPlayable newSolution, nextPlayerAlive g, guessed ++ [char]), True)
+      else let newPlayers = updatePlayers (wrongGuess p) players -- Char was solved but not in solution
+               in ((solution, newPlayers, running, nextPlayerAlive (solution, newPlayers, running, playerAtTurn, guessed), guessed ++ [char]), True)
 
 {- | Returns the player which is currently at turn. -}
 playerAtTurn ::
@@ -56,6 +53,18 @@ nextPlayerAlive (_, players, _, turn@(turnId,_,_,_), _) =
       in head $ playersAlive ((\(a, b) -> b ++ a) (splitAt index players))
 
 -- * Helper
+
+validTurn ::
+  Player
+  -> Char
+  -> Game
+  -> Bool
+validTurn _ _ g@(_,_,False,_,_) = False -- No turn on ended game
+validTurn (_, _, _, False) _ _ = False -- player at turn should not be dead
+validturn p@(_, _, _, pAlive) char g@(solution, players, running, playerAtTurn, guessed)
+  | p /= playerAtTurn = False -- Only the player at turn
+  | char `elem` guessed = False-- Only chars not tried until now -- failure!
+  | otherwise = True
 
 trimPlayers::
   Game
