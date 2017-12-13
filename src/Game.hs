@@ -29,11 +29,12 @@ makeATurn::
   -> (Game, Bool) -- ^ The updated game
 makeATurn p@(pId, pSec, pFailures, pAlive) char g@(solution, players, running, playerAtTurn, guessed)
   | not (validTurn p char g) = (g, False)
-  | otherwise = if tryChar char solution
-      then let newSolution = solveChar char solution -- Char was solved in game
-               in ((newSolution, players, isPlayable newSolution, nextPlayerAlive g, guessed ++ [char]), True)
-      else let newPlayers = updatePlayers (wrongGuess p) players -- Char was solved but not in solution
-               in ((solution, newPlayers, running, nextPlayerAlive (solution, newPlayers, running, playerAtTurn, guessed), guessed ++ [char]), True)
+  | tryChar char solution =
+        let newSolution = solveChar char solution -- Char was solved in game
+            in ((newSolution, players, isPlayable newSolution, nextPlayerAlive g, guessed ++ [char]), True)
+  | otherwise =
+        let newPlayers = updatePlayers (wrongGuess p) players -- Char was solved but not in solution
+            in ((solution, newPlayers, running, nextPlayerAlive (solution, newPlayers, running, playerAtTurn, guessed), guessed ++ [char]), True)
 
 {- | Returns the player which is currently at turn. -}
 playerAtTurn ::
