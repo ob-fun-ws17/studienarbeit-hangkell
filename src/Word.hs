@@ -13,7 +13,7 @@ import Data.Char(toLower)
 import Data.List
 
 -- | Placeholder for unsolved chars in solution
-placeholder = '_' :: Char
+placeholder = '_' :: Char -- Deprecated? :D
 
 -- | Solution of a Hangman game. Unguessd chars are marked with a False.
 type SolutionWord = [(Char, Bool)]
@@ -26,7 +26,7 @@ type SolutionWord = [(Char, Bool)]
 createSolutionWord ::
   String -- ^ String to play with
   -> SolutionWord -- ^ Solution to create a game with
-createSolutionWord = map (\char -> (char, False))
+createSolutionWord = solveChar '.' . solveChar ',' . solveChar '!' . solveChar '?' . solveChar ';' . solveChar '\'' . solveChar ' ' . map (\char -> (char, False))
 
 {- | Checks if a given char is in the word.
 
