@@ -11,11 +11,17 @@ module Player where
 
 maxFaliures = 10
 
-type Id = Int
-type Secret = String
-type Failures = Int
-type Alive = Bool
-type Player = (Id, Secret, Failures, Alive)
+--type Id = Int
+--type Secret = String
+--type Failures = Int
+--type Alive = Bool
+-- type Player = (Id, Secret, Failures, Alive)
+data Player = Player {
+  playerId :: Int,
+  secret :: String,
+  failures :: Int,
+  isAlive :: Bool
+} deriving (Eq, Show)
 
 {- | Creates a new Player with the given id.
 The player is initialized with NO secret and alive
@@ -26,18 +32,19 @@ newPlayer 4
 newPlayer ::
   Int -- ^ the id for the player
   -> Player -- ^ created player
-newPlayer pid = (pid, "", 0, True)
+newPlayer pid = Player pid "" 0 True
 
 {- | returns a list of all players alive -}
 playersAlive ::
   [Player] -- ^
   -> [Player]
-playersAlive = filter (\p@(_,_,_, state) -> state)
+playersAlive = filter isAlive
 
 {- | Updates the player after an wrong try. Kills him after last failure -}
 wrongGuess ::
   Player -- ^ player that guessed wrong
   -> Player -- ^ updated player
-wrongGuess p@(_, _, _, False) = p
-wrongGuess (a, b, failures, alive) = let newfailures = failures + 1
-                                        in (a, b, newfailures, newfailures < maxFaliures)
+wrongGuess p
+  | not $ isAlive p = p
+  | otherwise = let newFailures = failures p + 1
+                in Player (playerId p) (secret p) newFailures (newFailures < maxFaliures)

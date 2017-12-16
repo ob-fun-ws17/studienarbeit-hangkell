@@ -15,12 +15,20 @@ import Player
 import Data.List
 import Data.Maybe
 
-type Game = (SolutionWord {- The word this game is about to solve -}
-            , [Player] {- All players participating at the game -}
-            , Bool {- Is game still active/running -}
-            , Player {- Player currently at turn -}
-            , String {- All guessed chars -}
-            )
+--type Game = (SolutionWord {- The word this game is about to solve -}
+--            , [Player] {- All players participating at the game -}
+--            , Bool {- Is game still active/running -}
+--            , Player {- Player currently at turn -}
+--            , String {- All guessed chars -}
+--            )
+
+data Game = Game {
+  solution :: SolutionWord,
+  players :: [Player],
+  isRunning :: Bool,
+  atTurn :: Player,
+  guesses :: String
+} deriving (Eq, Show)
 
 newGame::
   String
@@ -30,25 +38,25 @@ newGame word
   | otherwise =
     let solution = createSolutionWord word
         player = newPlayer 0
-        in Just (solution, [player], isPlayable solution, player, "")
+        in Just $ Game solution [player] (isPlayable solution) player ""
 
 makeATurn::
   Player -- ^ The player who wants to make a turn
   -> Char -- ^ The char to try
   -> Game -- ^ The game to operate on
   -> (Game, Bool) -- ^ The updated game
-makeATurn p@(pId, pSec, pFailures, pAlive) char g@(solution, players, running, playerAtTurn, guessed)
+makeATurn p char g
   | not (validTurn p char g) = (g, False)
-  | char `elem` guessed = (playersMistake p char g, True)
-  | tryChar char solution = (playersSuccess p char g, True)
+  | char `elem` guesses g = (playersMistake p char g, True)
+  | tryChar char $ solution g = (playersSuccess p char g, True)
   | otherwise = (playersMistake p char g, True)
 
 {- | Returns the player which is currently at turn. -}
 playerAtTurn ::
   Game -- ^ Game to check
   -> Maybe Player -- ^ Player that is at turn.
-playerAtTurn (_,_,state,p,_)
-          | state = Just p
+playerAtTurn game
+          | isRunning game = Just $ atTurn game
           | otherwise = Nothing
 
 {- returns the next alive player that is at turn.-}
@@ -56,9 +64,9 @@ playerAtTurn (_,_,state,p,_)
 nextPlayerAlive::
   Game
   -> Player
-nextPlayerAlive (_, players, _, turn@(turnId,_,_,_), _) =
-  let index = fromMaybe (-1) (findIndex (\(curID,_,_,_) -> curID == turnId) players)
-      in head $ playersAlive ((\(a, b) -> b ++ a) (splitAt (index + 1) players))
+nextPlayerAlive g =
+  let index = fromMaybe (-1) (findIndex (\p -> playerId p == playerId (atTurn g)) (players g) )
+      in head $ playersAlive ((\(a, b) -> b ++ a) (splitAt (index + 1) (players g )))
 
 -- * Helper
 
@@ -67,40 +75,41 @@ validTurn ::
   -> Char
   -> Game
   -> Bool
-validTurn p@(a, b, c, alive) char g@(solution, players, running, playerAtTurn, guessed)
-  | not running = False -- No turn on ended game
-  | not alive = False -- player at turn should not be dead
-  | p /= playerAtTurn = False -- Only the player at turn
+validTurn p char g
+  | not $ isRunning g = False -- No turn on ended game
+  | not $ isAlive p = False -- player at turn should not be dead
+  | p /= atTurn g = False -- Only the player at turn
   | otherwise = True
 
 trimPlayers::
   Game
   -> Game
-trimPlayers (a, players, c, d, e) = (a, filter (\(_,_,_, alive) -> alive) players , c, d, e)
+--trimPlayers game = game (a, filter (\(_,_,_, alive) -> alive) players game , c, d, e)
+trimPlayers g = Game (solution g) (filter isAlive (players g)) (isRunning g) (atTurn g) (guesses g)
 
 {- | Takes an updated player and replaces its old version in the list.-}
 updatePlayers::
   Player -- ^ The updated player
   -> [Player] -- ^ Old players
   -> [Player] -- ^ updated players
-updatePlayers x@(pid,_,_,_) = map (\p@(cid,_,_,_) -> if cid == pid then x else p)
+updatePlayers x = map (\c-> if playerId c == playerId x then x else c)
 
 playersMistake ::
   Player
   -> Char
   -> Game
   -> Game
-playersMistake p c g@(solution, players, running, atTurn, guesses) =
-  let newPlayers = updatePlayers (wrongGuess p) players;
-      newGuesses = if c `elem` guesses then guesses else guesses ++ [c];
-  in let tmpGame = (solution, newPlayers, running, atTurn, newGuesses);
-     in (solution, newPlayers, running, nextPlayerAlive tmpGame, newGuesses)
+playersMistake p c g =
+  let newPlayers = updatePlayers (wrongGuess p) (players g);
+      newGuesses = if c `elem` guesses g then guesses g else guesses g ++ [c];
+  in let tmpGame = Game (solution g) newPlayers (isRunning g) (atTurn g) newGuesses
+     in Game (solution g) newPlayers (isRunning g) (nextPlayerAlive tmpGame) newGuesses
 
 playersSuccess ::
  Player
  -> Char
  -> Game
  -> Game
-playersSuccess p c g@(solution, players, running, atTurn, guesses) =
-  let tmpGame = (solution, players, running, atTurn, guesses);
-  in (solution, players, running, nextPlayerAlive tmpGame, guesses ++ [c])
+playersSuccess p c g =
+  let newSolution = solveChar c (solution g)
+  in Game newSolution (players g) (isPlayable newSolution) (nextPlayerAlive g) (guesses g ++ [c])
