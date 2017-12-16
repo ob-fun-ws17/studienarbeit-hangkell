@@ -7,7 +7,7 @@ Maintainer  : Florian Hageneder
 Stability   : none
 Portability : what?
 -}
-module Game (Game, makeATurn, playerAtTurn, nextPlayerAlive) where
+module Game (Game, newGame, makeATurn, playerAtTurn, nextPlayerAlive) where
 --module Game where
 
 import Word
@@ -21,6 +21,16 @@ type Game = (SolutionWord {- The word this game is about to solve -}
             , Player {- Player currently at turn -}
             , String {- All guessed chars -}
             )
+
+newGame::
+  String
+  -> Maybe Game
+newGame word
+  | null word = Nothing
+  | otherwise =
+    let solution = createSolutionWord word
+        player = newPlayer 0
+        in Just (solution, [player], isPlayable solution, player, "")
 
 makeATurn::
   Player -- ^ The player who wants to make a turn

@@ -36,6 +36,11 @@ testGame''' :: Game = ([('a', False)],
 
 spec :: Spec
 spec = do
+  describe "newGame" $ do
+    it "rejects empty word" $
+      newGame "" `shouldBe` Nothing
+    it "creates simple Game" $
+      newGame "a" `shouldBe` Just ([('a', False)], [(0, "", 0, True)], True, (0, "", 0, True), "")
   describe "makeATurn" $ do
     it "rejrect a not running game" $
       makeATurn p1 'c' testGame''' `shouldBe` (testGame''', False)
