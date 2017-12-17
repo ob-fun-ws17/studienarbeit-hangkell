@@ -1,3 +1,6 @@
+{-# LANGUAGE DataKinds       #-}
+{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE TypeOperators   #-}
 {-|
 Module      : Hangman player Module
 Description : Library to handle a single or group of players.
@@ -8,6 +11,9 @@ Stability   : none
 Portability : what?
 -}
 module Player where
+
+import Data.Aeson
+import Data.Aeson.TH
 
 maxFaliures = 10
 
@@ -22,6 +28,8 @@ data Player = Player {
   failures :: Int,
   isAlive :: Bool
 } deriving (Eq, Show)
+
+$(deriveJSON defaultOptions ''Player)
 
 {- | Creates a new Player with the given id.
 The player is initialized with NO secret and alive

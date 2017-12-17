@@ -1,3 +1,6 @@
+{-# LANGUAGE DataKinds       #-}
+{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE TypeOperators   #-}
 {-|
 Module      : Hangman Game Module
 Description : Library to handle game logic.
@@ -9,6 +12,9 @@ Portability : what?
 -}
 module Game (Game (..), newGame, makeATurn, playerAtTurn, nextPlayerAlive) where
 --module Game where
+
+import Data.Aeson
+import Data.Aeson.TH
 
 import Word
 import Player
@@ -29,6 +35,8 @@ data Game = Game {
   atTurn :: Player,
   guesses :: String
 } deriving (Eq, Show)
+
+$(deriveJSON defaultOptions ''Game)
 
 newGame::
   String
