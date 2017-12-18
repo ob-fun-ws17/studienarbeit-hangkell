@@ -4,7 +4,7 @@
 
 {-|
 Module      : Hangman Game Module
-Description : Library to handle game logic.
+Description : Library for handling a __game session__.
 Copyright   : >implying
 License     : >implying
 Maintainer  : Florian Hageneder
@@ -12,7 +12,6 @@ Stability   : none
 Portability : what?
 -}
 module Game (Game (..), newGame, makeATurn, playerAtTurn, nextPlayerAlive) where
---module Game where
 
 import Data.Aeson
 import Data.Aeson.TH
@@ -22,27 +21,21 @@ import Player
 import Data.List
 import Data.Maybe
 
---type Game = (SolutionWord {- The word this game is about to solve -}
---            , [Player] {- All players participating at the game -}
---            , Bool {- Is game still active/running -}
---            , Player {- Player currently at turn -}
---            , String {- All guessed chars -}
---            )
-
+-- | The type to store a game sessions state
 data Game = Game {
-  gameId :: Int,
+  gameId :: Int {- ID of the game -},
   solution :: SolutionWord,
   players :: [Player],
   isRunning :: Bool,
   atTurn :: Player,
   guesses :: String
 } deriving (Eq, Show, Read)
-
 $(deriveJSON defaultOptions ''Game)
 
+-- | Creates a new game session with an completely unsolved given solutionWord
 newGame::
-  String
-  -> Maybe Game
+  String -- ^ The goal of this instance of Hangman
+  -> Maybe Game -- ^ A valid new game or Nothing
 newGame word
   | null word = Nothing
   | otherwise =
@@ -50,6 +43,7 @@ newGame word
         player = newPlayer 0
         in Just $ Game 0 solution [player] (isPlayable solution) player ""
 
+-- | Updates the given game session and transists it to the next state
 makeATurn::
   Player -- ^ The player who wants to make a turn
   -> Char -- ^ The char to try
@@ -69,7 +63,7 @@ playerAtTurn game
           | isRunning game = Just $ atTurn game
           | otherwise = Nothing
 
-{- returns the next alive player that is at turn.-}
+{- | returns the next alive player that is at turn.-}
 -- Possibly crashes when no one is alive!!
 nextPlayerAlive::
   Game
@@ -78,7 +72,7 @@ nextPlayerAlive g =
   let index = fromMaybe (-1) (findIndex (\p -> playerId p == playerId (atTurn g)) (players g) )
       in head $ playersAlive ((\(a, b) -> b ++ a) (splitAt (index + 1) (players g )))
 
--- * Helper
+-- * Helper ###################################################################
 
 validTurn ::
   Player

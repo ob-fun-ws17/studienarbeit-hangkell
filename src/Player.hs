@@ -3,7 +3,7 @@
 {-# LANGUAGE TypeOperators   #-}
 {-|
 Module      : Hangman player Module
-Description : Library to handle a single or group of players.
+Description : Library to handle a single or group of __players.__
 Copyright   : >implying
 License     : >implying
 Maintainer  : Florian Hageneder
@@ -17,11 +17,7 @@ import Data.Aeson.TH
 
 maxFaliures = 10
 
---type Id = Int
---type Secret = String
---type Failures = Int
---type Alive = Bool
--- type Player = (Id, Secret, Failures, Alive)
+-- | Data type to bundle Imformation about a player within an game session.
 data Player = Player {
   playerId :: Int,
   secret :: String,
@@ -44,8 +40,8 @@ newPlayer pid = Player pid "" 0 True
 
 {- | returns a list of all players alive -}
 playersAlive ::
-  [Player] -- ^
-  -> [Player]
+  [Player] -- ^ A set of players
+  -> [Player] -- ^ All players currently allowed to play
 playersAlive = filter isAlive
 
 {- | Updates the player after an wrong try. Kills him after last failure -}

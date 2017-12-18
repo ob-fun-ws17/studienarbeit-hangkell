@@ -1,6 +1,6 @@
 {-|
 Module      : Hangman Word Module
-Description : Library to handle a hangman solution word.
+Description : Library to handle an __hangman solution word.__
 Copyright   : >implying
 License     : >implying
 Maintainer  : Florian Hageneder
@@ -9,11 +9,11 @@ Portability : what?
 -}
 module Word where
 
-import Data.Char(toLower)
+import Data.Char (toLower)
 import Data.List
 
 -- | Placeholder for unsolved chars in solution
-placeholder = '_' :: Char -- Deprecated? :D
+placeholder = '_' :: Char
 
 -- | Solution of a Hangman game. Unguessd chars are marked with a False.
 type SolutionWord = [(Char, Bool)]
