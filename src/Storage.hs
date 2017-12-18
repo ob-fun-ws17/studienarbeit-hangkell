@@ -10,33 +10,38 @@ Maintainer  : Florian Hageneder
 Stability   : none
 Portability : what?
 -}
-module Storage (getGame, saveGames, loadGames) where
+module Storage (getGame, loadGames) where
 
-import Game
-import Player
+import Game (Game (..))
+import Control.Exception
 import System.IO
-import Data.Aeson
-import Data.Aeson.TH
-
-p1 = Player 0 "" (Player.maxFaliures - 1) True
-p2 = Player 1 "" 0 True
-testGame :: Game
-testGame = Game 0 [('a', False)]
-            [p1, p2]
-            True
-            p1
-            "b"
+import Data.List (find)
 
 gameFile :: FilePath
 gameFile = "storage.dat"
 
+getGames :: [Game]
+getGames = do
+  value <- (try loadGames :: IO (Either SomeException [Game])) :: (Either SomeException [Game])
+  -- case value of
+    -- Left ex -> []
+    -- Right games -> games
+  return value
+
 getGame :: Int -> Maybe Game
 getGame gid
   | gid < 0 = Nothing
-  | otherwise = Nothing
+  | otherwise =  Nothing
 
-saveGames :: IO ()
-saveGames = writeFile gameFile (show [testGame])
+    -- let result = try loadGames
+                    -- in case result of
+                      -- Left ex -> Nothing
+                      -- Right games -> Maybe find (\g -> gameId g == gid) games
+
+-- Helper #####################################################################
+
+saveGames :: [Game] -> IO ()
+saveGames games = writeFile gameFile (show games)
 
 loadGames :: IO [Game]
 loadGames = do
