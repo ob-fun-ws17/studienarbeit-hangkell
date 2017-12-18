@@ -10,42 +10,56 @@ Maintainer  : Florian Hageneder
 Stability   : none
 Portability : what?
 -}
-module Storage (getGame, loadGames) where
+-- module Storage (loadGames, loadGame, saveGames, saveGame) where
+module Storage where
 
 import Game (Game (..))
 import Control.Exception
 import System.IO
 import Data.List (find)
 
+-- | The storage to keep all game sessions
 gameFile :: FilePath
 gameFile = "storage.dat"
 
-getGames :: [Game]
-getGames = do
-  value <- (try loadGames :: IO (Either SomeException [Game])) :: (Either SomeException [Game])
-  -- case value of
-    -- Left ex -> []
-    -- Right games -> games
-  return value
+-- gameHandle = openFile gameFile ReadWriteMode
 
-getGame :: Int -> Maybe Game
-getGame gid
-  | gid < 0 = Nothing
-  | otherwise =  Nothing
-
-    -- let result = try loadGames
-                    -- in case result of
-                      -- Left ex -> Nothing
-                      -- Right games -> Maybe find (\g -> gameId g == gid) games
-
--- Helper #####################################################################
-
-saveGames :: [Game] -> IO ()
-saveGames games = writeFile gameFile (show games)
-
-loadGames :: IO [Game]
-loadGames = do
-  content <- readFile gameFile
-  let games :: [Game]
-      games = read content
-      in return games
+-- ###########################################################################
+-- Read games
+--
+-- -- | Returns all the stored games.
+-- loadGames :: IO [Game] -- ^ Loads all stored games from the storage
+-- loadGames = do
+--   content <- readFile gameFile
+--   return $ read content
+--
+-- -- | Returns a single stored game or Nothing
+-- loadGame ::
+--   Int -- ^ GameID to get
+--   -> Maybe Game
+-- loadGame gid
+--   | gid < 0 = Nothing
+--   | otherwise = do
+--       let games = loadGames :: IO [Game]
+--       return find (\g -> gameId g == gid) games
+--
+-- -- ###########################################################################
+-- -- Store games
+--
+-- -- | Overrides the whole storage with the given set of games
+-- saveGames ::
+--   [Game] -- ^ All games that should be persisted in the storage
+--   -> IO () -- ^ writes everything the storage
+-- saveGames games = do
+--   writeFile gameFile (show games)
+--
+-- -- | Overrides the stored game with same ID or appends it to the list
+-- saveGame ::
+--   Game -- ^ Single game to update
+--   -> IO () -- ^ Writes result to the file
+-- saveGame update = do
+--   games <- loadGames
+--   let newGames = if null $ filter (\g -> gameId g == gameId update) games
+--         then games ++ [update]
+--         else map (\g -> if gameId g == gameId update then update else g) games
+--       in saveGames newGames
