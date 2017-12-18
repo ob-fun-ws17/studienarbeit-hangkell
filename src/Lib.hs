@@ -30,6 +30,7 @@ data User = User
 $(deriveJSON defaultOptions ''User)
 
 type API = "users" :> Get '[JSON] [User]
+        :<|> "users2" :> Get '[JSON] [User]
 
 startApp :: IO ()
 startApp = run 8080 app
@@ -42,6 +43,7 @@ api = Proxy
 
 server :: Server API
 server = return users
+      :<|> return [User 3 "Oliver" "Braun"]
 
 users :: [User]
 users = [ User 1 "Isaac" "Newton"

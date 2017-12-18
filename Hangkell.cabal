@@ -1,5 +1,5 @@
 name:                Hangkell
-version:             0.1.1
+version:             0.2.0
 synopsis:            Like Hangman but online!
 description:         An Hangman server to play on the network via a RESTful service.
 homepage:            https://github.com/ob-fun-ws17/studienarbeit-hangkell
@@ -15,7 +15,7 @@ cabal-version:       >=1.10
 
 library
   hs-source-dirs:      src
-  exposed-modules:     Lib, Word, Game, Player
+  exposed-modules:     Lib, Word, Game, Player, Storage
   build-depends:       base >= 4.7 && < 5
                      , aeson
                      , servant-server

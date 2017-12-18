@@ -1,6 +1,7 @@
 {-# LANGUAGE DataKinds       #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeOperators   #-}
+
 {-|
 Module      : Hangman Game Module
 Description : Library to handle game logic.
@@ -29,12 +30,13 @@ import Data.Maybe
 --            )
 
 data Game = Game {
+  gameId :: Int,
   solution :: SolutionWord,
   players :: [Player],
   isRunning :: Bool,
   atTurn :: Player,
   guesses :: String
-} deriving (Eq, Show)
+} deriving (Eq, Show, Read)
 
 $(deriveJSON defaultOptions ''Game)
 
@@ -46,7 +48,7 @@ newGame word
   | otherwise =
     let solution = createSolutionWord word
         player = newPlayer 0
-        in Just $ Game solution [player] (isPlayable solution) player ""
+        in Just $ Game 0 solution [player] (isPlayable solution) player ""
 
 makeATurn::
   Player -- ^ The player who wants to make a turn
@@ -93,7 +95,7 @@ trimPlayers::
   Game
   -> Game
 --trimPlayers game = game (a, filter (\(_,_,_, alive) -> alive) players game , c, d, e)
-trimPlayers g = Game (solution g) (filter isAlive (players g)) (isRunning g) (atTurn g) (guesses g)
+trimPlayers g = Game (gameId g) (solution g) (filter isAlive (players g)) (isRunning g) (atTurn g) (guesses g)
 
 {- | Takes an updated player and replaces its old version in the list.-}
 updatePlayers::
@@ -110,8 +112,8 @@ playersMistake ::
 playersMistake p c g =
   let newPlayers = updatePlayers (wrongGuess p) (players g);
       newGuesses = if c `elem` guesses g then guesses g else guesses g ++ [c];
-  in let tmpGame = Game (solution g) newPlayers (isRunning g) (atTurn g) newGuesses
-     in Game (solution g) newPlayers (isRunning g) (nextPlayerAlive tmpGame) newGuesses
+  in let tmpGame = Game (gameId g) (solution g) newPlayers (isRunning g) (atTurn g) newGuesses
+     in Game (gameId g) (solution g) newPlayers (isRunning g) (nextPlayerAlive tmpGame) newGuesses
 
 playersSuccess ::
  Player
@@ -120,4 +122,4 @@ playersSuccess ::
  -> Game
 playersSuccess p c g =
   let newSolution = solveChar c (solution g)
-  in Game newSolution (players g) (isPlayable newSolution) (nextPlayerAlive g) (guesses g ++ [c])
+  in Game (gameId g) newSolution (players g) (isPlayable newSolution) (nextPlayerAlive g) (guesses g ++ [c])

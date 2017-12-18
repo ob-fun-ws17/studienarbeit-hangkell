@@ -27,7 +27,7 @@ data Player = Player {
   secret :: String,
   failures :: Int,
   isAlive :: Bool
-} deriving (Eq, Show)
+} deriving (Eq, Show, Read)
 
 $(deriveJSON defaultOptions ''Player)
 
