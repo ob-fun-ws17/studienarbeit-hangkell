@@ -15,7 +15,7 @@ cabal-version:       >=1.10
 
 library
   hs-source-dirs:      src
-  exposed-modules:     Lib, Word, Game, Player, Storage
+  exposed-modules:     Api, Word, Game, Player, Storage
   build-depends:       base >= 4.7 && < 5
                      , aeson
                      , servant-server
@@ -35,7 +35,7 @@ test-suite Hangkell-test
   type:                exitcode-stdio-1.0
   hs-source-dirs:      test
   main-is:             Spec.hs
-  other-modules:       GameSpec, LibSpec, PlayerSpec, WordSpec
+  other-modules:       GameSpec, ApiSpec, PlayerSpec, WordSpec
   build-depends:       base
                      , Hangkell
                      , hspec

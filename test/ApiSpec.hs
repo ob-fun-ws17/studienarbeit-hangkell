@@ -1,8 +1,8 @@
 --{-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE OverloadedStrings #-}
-module LibSpec (main, spec) where
+module ApiSpec (main, spec) where
 
-import Lib (app)
+import Api (app)
 import Test.Hspec
 import Test.Hspec.Wai
 import Test.Hspec.Wai.JSON

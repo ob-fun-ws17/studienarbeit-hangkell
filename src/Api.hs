@@ -10,7 +10,7 @@ Maintainer  : Florian Hageneder
 Stability   : none
 Portability : what?
 -}
-module Lib
+module Api
     ( startApp
     , app
     ) where
