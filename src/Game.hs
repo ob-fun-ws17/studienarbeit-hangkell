@@ -1,6 +1,7 @@
 {-# LANGUAGE DataKinds       #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeOperators   #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 {-|
 Module      : Hangman Game Module
@@ -22,15 +23,23 @@ import Data.List
 import Data.Maybe
 
 -- | The type to store a game sessions state
-data Game = Game {
-  gameId :: Int {- ID of the game -},
-  solution :: SolutionWord,
-  players :: [Player],
-  isRunning :: Bool,
-  atTurn :: Player,
-  guesses :: String
-} deriving (Eq, Show, Read)
-$(deriveJSON defaultOptions ''Game)
+data Game = Game
+  { gameId :: Int -- ^ ID of the game
+  , solution :: SolutionWord
+  , players :: [Player]
+  , isRunning :: Bool
+  , atTurn :: Player
+  , guesses :: String
+  } deriving (Eq, Show, Read)
+
+instance ToJSON Game where
+  toJSON (Game gid solution players running atTurn guesses) = object
+    [ "gameID" .= gid
+    , "solution" .= showSolution solution
+    , "players" .= toJSON players
+    , "atTurn" .= toJSON atTurn
+    , "guesses" .= guesses
+    ]
 
 -- | Creates a new game session with an completely unsolved given solutionWord
 newGame::

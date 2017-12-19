@@ -8,6 +8,7 @@
 - Multisession
 - Anmeldung der Spieler nur vor dem Spieler
 - Beende das Spiel, wenn der letzte Spieler tot ist
+- Spieler haben einen Key
 
 ## Geplant
 [x] Wörter können angelegt werden
@@ -15,7 +16,7 @@
 [x] Spieler können angelegt werden
 [x] Spieler können Fehlversuch erhalten und sterben u.U.
 [x] Satzzeichen werden automatisch gelöst
-[ ] Spieler haben einen Key
+
 [ ] Ganzes Lösungswort kann auf einmal gelöst werden
 [ ] Check ob Spielzug das Spiel beendet hat
 [ ] Spielzug via API

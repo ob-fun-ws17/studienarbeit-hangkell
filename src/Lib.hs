@@ -30,7 +30,7 @@ import Servant
 data TurnMessage = TurnMessage
   { playerId :: Int
   , playerSecret :: String
-  , guess :: Char
+  , guess :: String
   }
 $(deriveJSON defaultOptions ''TurnMessage)
 

@@ -1,6 +1,8 @@
 {-# LANGUAGE DataKinds       #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeOperators   #-}
+{-# LANGUAGE OverloadedStrings #-}
+
 {-|
 Module      : Hangman player Module
 Description : Library to handle a single or group of __players.__
@@ -25,7 +27,13 @@ data Player = Player {
   isAlive :: Bool
 } deriving (Eq, Show, Read)
 
-$(deriveJSON defaultOptions ''Player)
+instance ToJSON Player where
+  toJSON (Player pid secret failures isAlive) = object
+    [ "playerID" .= pid
+    , "failures" .= failures
+    , "alive" .= isAlive
+    , "maxFailures" .= Player.maxFaliures
+    ]
 
 {- | Creates a new Player with the given id.
 The player is initialized with NO secret and alive
