@@ -35,9 +35,9 @@ spec :: Spec
 spec = do
   describe "newGame" $ do
     it "rejects empty word" $
-      newGame "" `shouldBe` Nothing
+      newGame 0 "" `shouldBe` Nothing
     it "creates simple Game" $
-      newGame "a" `shouldBe` Just (Game 0  [('a', False)] [p0] True p0 "")
+      newGame 0 "a" `shouldBe` Just (Game 0  [('a', False)] [p0] True p0 "")
   describe "makeATurn" $ do
     it "rejrect a not running game" $
       makeATurn p1 'c' testGame''' `shouldBe` (testGame''', False)

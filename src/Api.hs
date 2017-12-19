@@ -1,6 +1,14 @@
+{-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE DataKinds       #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeOperators   #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+
 {-|
 Module      : Library
 Description : Library to handle __RESTful__ API
@@ -17,12 +25,15 @@ module Api
 
 import Game (Game (..), newGame)
 import Player
+import Storage
 import Data.Maybe
 import Data.Aeson
 import Data.Aeson.TH
 import Network.Wai
 import Network.Wai.Handler.Warp
 import Servant
+
+import Control.Monad.IO.Class
 
 -- ############################################################################
 -- Messages
@@ -54,19 +65,21 @@ server = allGames
     :<|> createPlayer
 
     where allGames :: Handler [Game]
-          allGames = return [ ]
+          allGames = do
+            games <- liftIO loadGames
+            return games
 
           createGame :: Handler Game
-          createGame = return $ fromJust (newGame "Test")
+          createGame = return $ fromJust (newGame 0 "Test")
 
           getGame :: Int -> Handler Game
-          getGame gid = return $ fromJust (newGame "Test")
+          getGame gid = return $ fromJust (newGame 0 "Test")
 
           turnGame :: Int -> TurnMessage -> Handler Game
-          turnGame gid msg = return $ fromJust (newGame "Test")
+          turnGame gid msg = return $ fromJust (newGame 0 "Test")
 
           solveGame :: Int -> TurnMessage -> Handler Game
-          solveGame gid msg = return $ fromJust (newGame "Test")
+          solveGame gid msg = return $ fromJust (newGame 0 "Test")
 
           createPlayer :: Int -> Handler Player
           createPlayer gid = return $ newPlayer 0

@@ -43,14 +43,15 @@ instance ToJSON Game where
 
 -- | Creates a new game session with an completely unsolved given solutionWord
 newGame::
-  String -- ^ The goal of this instance of Hangman
+  Int -- ^ The ID of this session
+  -> String -- ^ The goal of this instance of Hangman
   -> Maybe Game -- ^ A valid new game or Nothing
-newGame word
+newGame gid word
   | null word = Nothing
   | otherwise =
     let solution = createSolutionWord word
         player = newPlayer 0
-        in Just $ Game 0 solution [player] (isPlayable solution) player ""
+        in Just $ Game gid solution [player] (isPlayable solution) player ""
 
 -- | Updates the given game session and transists it to the next state
 makeATurn::
