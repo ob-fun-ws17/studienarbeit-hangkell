@@ -18,6 +18,8 @@ import Control.Exception
 import System.IO
 import Data.List (find)
 
+import Control.Monad.IO.Class
+
 -- | The storage to keep all game sessions
 gameFile :: FilePath
 gameFile = "storage.dat"
@@ -46,16 +48,15 @@ loadGame gid = do
 saveGames ::
   [Game] -- ^ All games that should be persisted in the storage
   -> IO () -- ^ writes everything the storage
-saveGames games = do
-  writeFile gameFile (show games)
+saveGames games = writeFile gameFile (show games)
 
 -- | Overrides the stored game with same ID or appends it to the list
 saveGame ::
   Game -- ^ Single game to update
   -> IO () -- ^ Writes result to the file
 saveGame update = do
-  games <- loadGames :: IO [Game]
-  let newGames = if null $ filter (\g -> gameId g == gameId update) games
+  games <- loadGames
+  let newGames = if not (any (\ g -> gameId g == gameId update) games)
                     then games ++ [update]
                     else map (\g -> if gameId g == gameId update then update else g) games
-      in saveGames newGames
+  saveGames newGames

@@ -29,6 +29,7 @@ import Storage
 import Data.Maybe
 import Data.Aeson
 import Data.Aeson.TH
+import Data.List
 import Network.Wai
 import Network.Wai.Handler.Warp
 import Servant
@@ -49,7 +50,7 @@ $(deriveJSON defaultOptions ''TurnMessage)
 -- API
 
 type API = "games" :> Get '[JSON] [Game] -- Get all games
-        :<|> "games" :> Post '[JSON] Game -- Create session
+        :<|> "games" :> QueryParam "word" String :> Post '[JSON] Game -- Create session
         :<|> "games" :> Capture "gid" Int :> Get '[JSON] Game -- Get single game
         :<|> "games" :> Capture "gid" Int :> ReqBody '[JSON] TurnMessage :> Put '[JSON] Game -- make a Turn
         :<|> "games" :> Capture "gid" Int :> ReqBody '[JSON] TurnMessage :> Put '[JSON] Game -- solve Game
@@ -67,8 +68,14 @@ server = allGames
     where allGames :: Handler [Game]
           allGames = liftIO loadGames
 
-          createGame :: Handler Game
-          createGame = return $ fromJust (newGame 0 "Test")
+          createGame :: Maybe String -> Handler Game
+          createGame Nothing = throwError err400 { errBody = "Parameter word missing" }
+          createGame word = do
+            games <- liftIO loadGames
+            let ids = map gameId games
+            let game = fromJust (newGame (if null ids then 0 else maximum ids + 1) $ fromJust word)
+            liftIO $ saveGame game
+            return game
 
           getGame :: Int -> Handler Game
           getGame gid = do
