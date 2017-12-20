@@ -65,15 +65,18 @@ server = allGames
     :<|> createPlayer
 
     where allGames :: Handler [Game]
-          allGames = do
-            games <- liftIO loadGames
-            return games
+          allGames = liftIO loadGames
 
           createGame :: Handler Game
           createGame = return $ fromJust (newGame 0 "Test")
 
           getGame :: Int -> Handler Game
-          getGame gid = return $ fromJust (newGame 0 "Test")
+          getGame gid = do
+            game <- liftIO $ loadGame gid
+            case game of
+              Nothing -> throwError err404 { errBody = "There is no game with this ID" }
+              Just g -> return g
+
 
           turnGame :: Int -> TurnMessage -> Handler Game
           turnGame gid msg = return $ fromJust (newGame 0 "Test")
