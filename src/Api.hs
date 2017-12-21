@@ -138,5 +138,5 @@ api :: Proxy API
 api = Proxy
 
 -- | Starts the application on Port 8080
-startApp :: IO () -- | Opens port 8080 and serves api
+startApp :: IO () -- ^ Opens port 8080 and serves api
 startApp = run 8080 app
