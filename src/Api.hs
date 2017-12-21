@@ -23,7 +23,7 @@ module Api
     , app
     ) where
 
-import Game (Game (..), newGame)
+import Game (Game (..), newGame, makeATurn)
 import Player
 import Storage
 import Data.Maybe
@@ -35,6 +35,7 @@ import Network.Wai.Handler.Warp
 import Servant
 
 import Control.Monad.IO.Class
+import Control.Monad (when)
 
 -- ############################################################################
 -- Messages
@@ -78,21 +79,45 @@ server = allGames
             return game
 
           getGame :: Int -> Handler Game
-          getGame gid = do
+          getGame = getGameHandled
+
+          turnGame :: Int -> TurnMessage -> Handler Game
+          turnGame gid change = do
             game <- liftIO $ loadGame gid
             case game of
               Nothing -> throwError err404 { errBody = "There is no game with this ID" }
-              Just g -> return g
+              Just g -> do
+                when (length (Api.guess change) /= 1) $ throwError err400 { errBody = "You can only guess a single char!" }
+                player <- getPlayerHandled g (Api.playerId change) (Api.playerSecret change)
+                let game = fst (makeATurn player (head $ Api.guess change) g)
+                liftIO $ saveGame game
+                return game
 
-
-          turnGame :: Int -> TurnMessage -> Handler Game
-          turnGame gid msg = return $ fromJust (newGame 0 "Test")
 
           solveGame :: Int -> TurnMessage -> Handler Game
           solveGame gid msg = return $ fromJust (newGame 0 "Test")
 
           createPlayer :: Int -> Handler Player
           createPlayer gid = return $ newPlayer 0
+
+-- ############################################################################
+-- Boilerplate
+
+-- | Loads a game or throws 404 if it could not be found
+getGameHandled :: Int -> Handler Game
+getGameHandled gid = do
+  game <- liftIO $ loadGame gid
+  case game of
+    Nothing -> throwError err404 { errBody = "There is no game with this ID" }
+    Just g -> return g
+
+-- | Fetches the player from the game or throws an error
+getPlayerHandled :: Game -> Int -> String -> Handler Player
+getPlayerHandled game pid key = do
+  let player = getPlayerForId (players game) pid key
+  case player of
+    Nothing -> throwError err401 { errBody = "There is no player with this ID or credentials did not match" }
+    Just p -> return p
 
 -- ############################################################################
 -- Boilerplate

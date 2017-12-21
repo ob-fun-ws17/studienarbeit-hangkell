@@ -44,7 +44,7 @@ newPlayer 4
 newPlayer ::
   Int -- ^ the id for the player
   -> Player -- ^ created player
-newPlayer pid = Player pid "" 0 True
+newPlayer pid = Player pid "password" 0 True
 
 {- | returns a list of all players alive -}
 playersAlive ::
