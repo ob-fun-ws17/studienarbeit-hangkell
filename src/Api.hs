@@ -23,7 +23,7 @@ module Api
     , app
     ) where
 
-import Game (Game (..), newGame, makeATurn)
+import Game (Game (..), newGame, makeATurn, makeASolve)
 import Player
 import Storage
 import Data.Maybe
@@ -54,7 +54,7 @@ type API = "games" :> Get '[JSON] [Game] -- Get all games
         :<|> "games" :> QueryParam "word" String :> Post '[JSON] Game -- Create session
         :<|> "games" :> Capture "gid" Int :> Get '[JSON] Game -- Get single game
         :<|> "games" :> Capture "gid" Int :> ReqBody '[JSON] TurnMessage :> Put '[JSON] Game -- make a Turn
-        :<|> "games" :> Capture "gid" Int :> ReqBody '[JSON] TurnMessage :> Put '[JSON] Game -- solve Game
+        :<|> "games" :> Capture "gid" Int :> "solve" :> ReqBody '[JSON] TurnMessage :> Put '[JSON] Game -- solve Game
         :<|> "games" :> Capture "gid" Int :> "players" :> Post '[JSON] Player -- create Player
 
 
@@ -95,7 +95,15 @@ server = allGames
 
 
           solveGame :: Int -> TurnMessage -> Handler Game
-          solveGame gid msg = return $ fromJust (newGame 0 "Test")
+          solveGame gid change = do
+            game <- liftIO $ loadGame gid
+            case game of
+              Nothing -> throwError err404 { errBody = "There is no game with this ID" }
+              Just g -> do
+                player <- getPlayerHandled g (Api.playerId change) (Api.playerSecret change)
+                let game = fst (makeASolve player (Api.guess change) g)
+                liftIO $ saveGame game
+                return game
 
           createPlayer :: Int -> Handler Player
           createPlayer gid = return $ newPlayer 0

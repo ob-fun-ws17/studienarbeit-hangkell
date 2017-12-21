@@ -38,6 +38,7 @@ instance ToJSON Game where
     , "players" .= toJSON players
     , "atTurn" .= toJSON atTurn
     , "guesses" .= guesses
+    , "isRunning" .= running
     ]
 
 -- | Creates a new game session with an completely unsolved given solutionWord
