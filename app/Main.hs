@@ -11,6 +11,7 @@ main :: IO ()
 main = do
   -- Initialize storage if it is not present
   fileExist <- doesFileExist Storage.gameFile
-  unless fileExist $ writeFile Storage.gameFile "[]"
+  let xs = ["[","]"]
+  unless fileExist $ writeFile Storage.gameFile $ unwords xs
   -- Start server
   startApp
