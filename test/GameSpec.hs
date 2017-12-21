@@ -47,6 +47,8 @@ spec = do
       makeATurn p2 'c' testGame `shouldBe` (testGame, False)
     it "makes a turn with killing mistake" $
       makeATurn p1 'c' testGame `shouldBe` (Game 0 [('a', False)] [Player 0 "" Player.maxFaliures False, p2] True p2 "bc" ,True)
+    it "ends game properly" $
+      isRunning  (fst (makeATurn p1 'a' testGame)) `shouldBe` False
   describe "playerAtTurn" $
     it "returns right player" $
       playerAtTurn testGame `shouldBe` Just p1

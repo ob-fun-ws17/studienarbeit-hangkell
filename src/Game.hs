@@ -1,5 +1,4 @@
 {-# LANGUAGE DataKinds       #-}
-{-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeOperators   #-}
 {-# LANGUAGE OverloadedStrings #-}
 
@@ -25,11 +24,11 @@ import Data.Maybe
 -- | The type to store a game sessions state
 data Game = Game
   { gameId :: Int -- ^ ID of the game
-  , solution :: SolutionWord
-  , players :: [Player]
-  , isRunning :: Bool
-  , atTurn :: Player
-  , guesses :: String
+  , solution :: SolutionWord -- ^ SolutionWord the game is about
+  , players :: [Player] -- ^ all participating player
+  , isRunning :: Bool -- ^ wether the game is still running
+  , atTurn :: Player  -- ^ the player to make the next turn
+  , guesses :: String -- ^ all chars tried in the past
   } deriving (Eq, Show, Read)
 
 instance ToJSON Game where
