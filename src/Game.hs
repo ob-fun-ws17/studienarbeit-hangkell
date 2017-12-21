@@ -11,7 +11,7 @@ Maintainer  : Florian Hageneder
 Stability   : none
 Portability : what?
 -}
-module Game (Game (..), newGame, makeATurn, playerAtTurn, nextPlayerAlive) where
+module Game (Game (..), newGame, makeATurn, makeASolve, nextPlayerAlive) where
 
 import Data.Aeson
 import Data.Aeson.TH
@@ -64,13 +64,20 @@ makeATurn p char g
   | tryChar char $ solution g = (playersSuccess p char g, True)
   | otherwise = (playersMistake p char g, True)
 
-{- | Returns the player which is currently at turn. -}
-playerAtTurn ::
-  Game -- ^ Game to check
-  -> Maybe Player -- ^ Player that is at turn.
-playerAtTurn game
-          | isRunning game = Just $ atTurn game
-          | otherwise = Nothing
+-- | Updates the given game session and transists it to the next state
+makeASolve::
+  Player -- ^ The player who wants to solve the game
+  -> String -- ^ The solution to try
+  -> Game -- ^ The game to operate on
+  -> (Game, Bool) -- ^ The updated game
+makeASolve p try g
+  | not (validTurn p ' ' g) = (g, False)
+  | fst $ solveWord try (solution g) = do -- Player actually solved game
+      let solved = snd $ solveWord try (solution g)
+      (g {solution = solved, isRunning = False}, True)
+  | otherwise = do -- Player did not solve -> now he is dead
+      let newPlayers = updatePlayers (killPlayer p) (players g)
+      (g {players = newPlayers, atTurn = nextPlayerAlive g}, False)
 
 {- | returns the next alive player that is at turn.-}
 -- Possibly crashes when no one is alive!!
@@ -88,7 +95,7 @@ validTurn ::
   -> Char
   -> Game
   -> Bool
-validTurn p char g
+validTurn p _ g
   | not $ isRunning g = False -- No turn on ended game
   | not $ isAlive p = False -- player at turn should not be dead
   | p /= atTurn g = False -- Only the player at turn
@@ -115,8 +122,8 @@ playersMistake ::
 playersMistake p c g =
   let newPlayers = updatePlayers (wrongGuess p) (players g);
       newGuesses = if c `elem` guesses g then guesses g else guesses g ++ [c];
-  in let tmpGame = Game (gameId g) (solution g) newPlayers (isRunning g) (atTurn g) newGuesses
-     in Game (gameId g) (solution g) newPlayers (isRunning g) (nextPlayerAlive tmpGame) newGuesses
+  in let tmpGame = g {players= newPlayers, guesses= newGuesses}
+      in tmpGame {atTurn= nextPlayerAlive tmpGame}
 
 playersSuccess ::
  Player
@@ -125,4 +132,4 @@ playersSuccess ::
  -> Game
 playersSuccess p c g =
   let newSolution = solveChar c (solution g)
-  in Game (gameId g) newSolution (players g) (isPlayable newSolution) (nextPlayerAlive g) (guesses g ++ [c])
+    in g {solution= newSolution, isRunning= isPlayable newSolution, atTurn= nextPlayerAlive g, guesses= guesses g ++ [c] }

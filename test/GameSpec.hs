@@ -49,9 +49,11 @@ spec = do
       makeATurn p1 'c' testGame `shouldBe` (Game 0 [('a', False)] [Player 0 "password" Player.maxFaliures False, p2] True p2 "bc" ,True)
     it "ends game properly" $
       isRunning  (fst (makeATurn p1 'a' testGame)) `shouldBe` False
-  describe "playerAtTurn" $
-    it "returns right player" $
-      playerAtTurn testGame `shouldBe` Just p1
+  describe "makeASolve" $ do
+    it "rejects player not at turn" $
+      makeASolve p2 "hi" testGame `shouldBe` (testGame, False)
+    it "solves Game" $
+      makeASolve p1 "a" testGame `shouldBe` (testGame {solution= [('a', True)], isRunning= False }, True)
   describe "nextPlayerAlive" $ do
     it "returns on regular game" $
       nextPlayerAlive testGame `shouldBe` p2
