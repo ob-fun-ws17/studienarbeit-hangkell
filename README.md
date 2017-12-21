@@ -22,9 +22,9 @@ stack exec Hangkell-exe
 Die Anwendung wird in Folge auf HTTP Requests auf dem **Port 8080** hören.
 Entsprechend der API kann man in Folge mit der Anwendung interagieren.
 
-1. Offene Spiele mit `GET /games/` abrufen
-2. Neues Spiel mit `POST /games?word=Hello%20World` anlegen
-3. Ersten Spielzug tätigen `PUT /games/0`<br />
+1. Offene Spiele mit `GET localhost:8080/games/` abrufen
+2. Neues Spiel mit `POST localhost:8080/games?word=Hello%20World` anlegen
+3. Ersten Spielzug tätigen `PUT localhost:8080/games/0`<br />
 Request Payload:
 ```JSON
 {
@@ -34,7 +34,7 @@ Request Payload:
 }
 ```
 4. Weiß man nun das Lösungswort so kann man das Spiel in einem Zug beenden<br />
-Dafür einen Lösungsversuch mit `PUT /games/0/solve` starten. Als Payload dann den Versuch:
+Dafür einen Lösungsversuch mit `PUT localhost:8080/games/0/solve` starten. Als Payload dann den Versuch:
 ```JSON
 {
       "playerId" : 0,
