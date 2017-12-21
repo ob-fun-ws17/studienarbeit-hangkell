@@ -61,7 +61,8 @@ saveGame update = do
   when (length newGames >= 0) $
     writeFile gameFile  (show $ updateGames games update)
 
-
+{- Takes a set of Games and replaces the game with the same ID as the given updated game.
+Appends it if there is no such game -}
 updateGames ::
   [Game] -- ^ List of games that should be updated
   -> Game -- ^ Game that should be updated or added

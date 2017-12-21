@@ -36,7 +36,7 @@ test-suite Hangkell-test
   type:                exitcode-stdio-1.0
   hs-source-dirs:      test
   main-is:             Spec.hs
-  other-modules:       GameSpec, ApiSpec, PlayerSpec, WordSpec
+  other-modules:       GameSpec, ApiSpec, PlayerSpec, WordSpec, StorageSpec
   build-depends:       base
                      , Hangkell
                      , hspec
