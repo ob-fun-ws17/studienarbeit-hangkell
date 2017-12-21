@@ -19,6 +19,7 @@ import System.IO
 import Data.List (find)
 
 import Control.Monad.IO.Class
+import Control.Monad (when)
 
 -- | The storage to keep all game sessions
 gameFile :: FilePath
@@ -39,7 +40,7 @@ loadGame ::
   -> IO (Maybe Game)
 loadGame gid = do
   games <- loadGames
-  return $ find (\g -> gameId g == 0) games
+  return $ find (\g -> gameId g == gid) games
 
 -- ###########################################################################
 -- Store games
@@ -56,7 +57,16 @@ saveGame ::
   -> IO () -- ^ Writes result to the file
 saveGame update = do
   games <- loadGames
-  let newGames = if not (any (\ g -> gameId g == gameId update) games)
-                    then games ++ [update]
-                    else map (\g -> if gameId g == gameId update then update else g) games
-  saveGames newGames
+  let newGames = updateGames games update
+  when (length newGames >= 0) $
+    writeFile gameFile  (show $ updateGames games update)
+
+
+updateGames ::
+  [Game] -- ^ List of games that should be updated
+  -> Game -- ^ Game that should be updated or added
+  -> [Game] -- ^ updated list
+updateGames input update =
+  if not (any (\ g -> gameId g == gameId update) input)
+    then input ++ [update]
+    else map (\g -> if gameId g == gameId update then update else g) input
