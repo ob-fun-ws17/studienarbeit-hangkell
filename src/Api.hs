@@ -106,7 +106,15 @@ server = allGames
                 return game
 
           createPlayer :: Int -> Handler Player
-          createPlayer gid = return $ newPlayer 0
+          createPlayer gid = do
+            game <- liftIO $ loadGame gid
+            case game of
+              Nothing -> throwError err404 { errBody = "There is no game with this ID" }
+              Just g -> do
+                let ids = map Player.playerId (players g)
+                let new = newPlayer (if null ids then 0 else maximum ids + 1)
+                liftIO $ saveGame g { players= players g ++ [new] }
+                return new
 
 -- ############################################################################
 -- Boilerplate
