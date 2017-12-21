@@ -22,6 +22,28 @@ stack exec Hangkell-exe
 Die Anwendung wird in Folge auf HTTP Requests auf dem **Port 8080** hören.
 Entsprechend der API kann man in Folge mit der Anwendung interagieren.
 
+1. Offene Spiele mit `GET /games/` abrufen
+2. Neues Spiel mit `POST /games?word=Hello%20World` anlegen
+3. Ersten Spielzug tätigen `PUT /games/0`<br />
+Request Payload:
+```JSON
+{
+      "playerId" : 0,
+      "playerSecret" : "password",
+      "guess" : "H"
+}
+```
+4. Weiß man nun das Lösungswort so kann man das Spiel in einem Zug beenden<br />
+Dafür einen Lösungsversuch mit `PUT /games/0/solve` starten. Als Payload dann den Versuch:
+```JSON
+{
+      "playerId" : 0,
+      "playerSecret" : "password",
+      "guess" : "Hello World"
+}
+```
+5. Das Spiel ist beendet, Spieler 0 hat gewonnen!
+
 ## API
 ### Entitäten
 - Player
@@ -49,7 +71,7 @@ Entsprechend der API kann man in Folge mit der Anwendung interagieren.
 ```
 {
   "playerId" : Int          // ID des Spielzug auslösenden Spielers
-  "playerSecret" : String   // Key des Spielers (standard: "")
+  "playerSecret" : String   // Key des Spielers (standard: "password")
   "guess" : Char/String     // Buchstabe/Lösung der/die gespielt wird
 }
 ```
@@ -70,11 +92,12 @@ Entsprechend der API kann man in Folge mit der Anwendung interagieren.
 #### Spielzug an einem laufenden Spiel
 **Anfrage:** `PUT /games/:id` **Body**: `Spielzug`<br />
 **Antwort:** `Game` Neuer Zustand des Spiels mit der gegebenen ID
-<!--
+
 #### Spiel lösen
 **Anfrage:** `PUT /games/:id/solve` **Body**: `Spielzug`<br />
 **Antwort:** `Game` Neuer Zustand des Spiels mit der gegebenen ID
 
+<!--
 #### Spieler bei einem Spiel anmelden
 **Anfrage:** `PUT /games/:id/solve` **Body**: `Spielzug`<br />
 **Antwort:** `Player` Spieler der dem Spiel mit der gegebenen ID hinzugefügt wurde

@@ -17,6 +17,7 @@ import Data.Aeson
 import Data.Aeson.TH
 import Data.List (find)
 
+-- | The maximum amount of failures a player is allowed to do before he has to die
 maxFaliures = 10
 
 -- | Data type to bundle Imformation about a player within an game session.

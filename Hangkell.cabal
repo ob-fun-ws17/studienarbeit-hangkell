@@ -1,5 +1,5 @@
 name:                Hangkell
-version:             0.2.0
+version:             1.0.0
 synopsis:            Like Hangman but online!
 description:         An Hangman server to play on the network via a RESTful service.
 homepage:            https://github.com/ob-fun-ws17/studienarbeit-hangkell
