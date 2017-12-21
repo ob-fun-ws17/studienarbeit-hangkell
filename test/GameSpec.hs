@@ -5,10 +5,10 @@ import Game
 import Player
 import Test.Hspec
 
-p0 :: Player = Player 0 "" 0 True
-p1 :: Player = Player 0 "" (Player.maxFaliures - 1) True
-p2 :: Player = Player 1 "" 0 True
-p3 :: Player = Player 2 "" 0 False
+p0 :: Player = Player 0 "password" 0 True
+p1 :: Player = Player 0 "password" (Player.maxFaliures - 1) True
+p2 :: Player = Player 1 "password" 0 True
+p3 :: Player = Player 2 "password" 0 False
 
 testGame :: Game = Game 0 [('a', False)]
             [p1, p2]
@@ -46,7 +46,7 @@ spec = do
     it "reject a player not at turn" $
       makeATurn p2 'c' testGame `shouldBe` (testGame, False)
     it "makes a turn with killing mistake" $
-      makeATurn p1 'c' testGame `shouldBe` (Game 0 [('a', False)] [Player 0 "" Player.maxFaliures False, p2] True p2 "bc" ,True)
+      makeATurn p1 'c' testGame `shouldBe` (Game 0 [('a', False)] [Player 0 "password" Player.maxFaliures False, p2] True p2 "bc" ,True)
     it "ends game properly" $
       isRunning  (fst (makeATurn p1 'a' testGame)) `shouldBe` False
   describe "playerAtTurn" $

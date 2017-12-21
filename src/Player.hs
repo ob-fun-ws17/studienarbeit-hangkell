@@ -78,3 +78,9 @@ getPlayerForId xs pid key
         Just p -> if secret p == key
                     then return p
                     else Nothing
+
+-- | Sets the state of an player to dead
+killPlayer ::
+  Player -- ^ currently player who did a terrible mistake
+  -> Player -- ^ Now dead player
+killPlayer p = p {isAlive = False}

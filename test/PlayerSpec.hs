@@ -9,6 +9,8 @@ p1 :: Player = Player 0 "a" 0 True
 p1' :: Player = Player 0 "a" 1 True
 p2 :: Player = Player 1 "b" (maxFaliures - 1) True
 p2' :: Player = Player 1 "b" maxFaliures False
+p3 :: Player = Player 0 "a" 0 True
+p3' :: Player = Player 0 "a" 0 False
 
 spec :: Spec
 spec = do
@@ -44,3 +46,8 @@ spec = do
         getPlayerForId [p1] 0 "a" `shouldBe` Just p1
     it "returns nothing if there is no one to return" $
         getPlayerForId [p1] 1 "b" `shouldBe` Nothing
+  describe "killPlayer" $ do
+    it "kills alive players" $
+        killPlayer p3 `shouldBe` p3'
+    it "kills dead player....what?" $
+        killPlayer p3' `shouldBe` p3'
