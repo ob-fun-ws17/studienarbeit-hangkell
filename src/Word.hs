@@ -50,6 +50,20 @@ solveChar ::
   -> SolutionWord -- ^ New state of progress
 solveChar try = map (\(char, state) -> (char, state || toLower char == toLower try))
 
+{- | Checks of the given word matches the solution.
+
+>>> solveWord "ab" [('a', False), ('b', False)]
+(True, [('a', True), ('b', True)])
+-}
+solveWord ::
+  String  -- ^ String to compare with the solution
+  -> SolutionWord -- ^ Solution to check against
+  -> (Bool, SolutionWord) -- ^ (if it was successfull, new State of the solution word)
+solveWord try word =
+  if map fst word == try
+    then (True, map (\x -> (fst x, True)) word)
+    else (False, word)
+
 {- | Converts a solution into a String
 
 >>> showSolution [('a', True), ('b', False)]

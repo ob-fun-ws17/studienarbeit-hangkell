@@ -45,3 +45,8 @@ spec = do
         isPlayable [('a', True), ('b', True), ('c', True)] `shouldBe` False
     it "confirms unsolved solution" $
         isPlayable [('a', True), ('b', False), ('c', True)] `shouldBe` True
+  describe "solveWord" $ do
+    it "shouldn't solve empty solutions" $
+        solveWord "a" [] `shouldBe` (False, [])
+    it "solves simple solution" $
+        solveWord "ab" [('a', False), ('b', False)] `shouldBe` (True, [('a', True), ('b', True)])
