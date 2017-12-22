@@ -97,8 +97,7 @@ Dafür einen Lösungsversuch mit `PUT localhost:8080/games/0/solve` starten. Als
 **Anfrage:** `PUT /games/:id/solve` **Body**: `Spielzug`<br />
 **Antwort:** `Game` Neuer Zustand des Spiels mit der gegebenen ID
 
-<!--
 #### Spieler bei einem Spiel anmelden
-**Anfrage:** `PUT /games/:id/solve` **Body**: `Spielzug`<br />
+**Anfrage:** `POST /games/:id/players`<br />
 **Antwort:** `Player` Spieler der dem Spiel mit der gegebenen ID hinzugefügt wurde
--->
+
