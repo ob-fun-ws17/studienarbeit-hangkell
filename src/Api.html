@@ -1,0 +1,151 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE RankNTypes #-}</span><span>
+</span><a name="line-2"></a><span class="hs-pragma">{-# LANGUAGE DeriveGeneric #-}</span><span>
+</span><a name="line-3"></a><span class="hs-pragma">{-# LANGUAGE DataKinds       #-}</span><span>
+</span><a name="line-4"></a><span class="hs-pragma">{-# LANGUAGE TemplateHaskell #-}</span><span>
+</span><a name="line-5"></a><span class="hs-pragma">{-# LANGUAGE TypeOperators   #-}</span><span>
+</span><a name="line-6"></a><span class="hs-pragma">{-# LANGUAGE FlexibleInstances #-}</span><span>
+</span><a name="line-7"></a><span class="hs-pragma">{-# LANGUAGE OverloadedStrings #-}</span><span>
+</span><a name="line-8"></a><span class="hs-pragma">{-# LANGUAGE ScopedTypeVariables #-}</span><span>
+</span><a name="line-9"></a><span class="hs-pragma">{-# LANGUAGE MultiParamTypeClasses #-}</span><span>
+</span><a name="line-10"></a><span class="hs-pragma">{-# LANGUAGE GeneralizedNewtypeDeriving #-}</span><span>
+</span><a name="line-11"></a><span>
+</span><a name="line-12"></a><span class="hs-comment">{-|
+Module      : Library
+Description : Library to handle __RESTful__ API
+Copyright   : &gt;implying
+License     : &gt;implying
+Maintainer  : Florian Hageneder
+Stability   : none
+Portability : what?
+-}</span><span>
+</span><a name="line-21"></a><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Api</span><span>
+</span><a name="line-22"></a><span>    </span><span class="hs-special">(</span><span> </span><a href="Api.html#startApp"><span class="hs-identifier hs-var">startApp</span></a><span>
+</span><a name="line-23"></a><span>    </span><span class="hs-special">,</span><span> </span><a href="Api.html#app"><span class="hs-identifier hs-var">app</span></a><span>
+</span><a name="line-24"></a><span>    </span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><a name="line-25"></a><span>
+</span><a name="line-26"></a><span class="hs-keyword">import</span><span> </span><a href="Game.html"><span class="hs-identifier">Game</span></a><span> </span><span class="hs-special">(</span><a href="Game.html#Game"><span class="hs-identifier hs-type">Game</span></a><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><a href="Game.html#newGame"><span class="hs-identifier hs-var">newGame</span></a><span class="hs-special">,</span><span> </span><a href="Game.html#makeATurn"><span class="hs-identifier hs-var">makeATurn</span></a><span class="hs-special">,</span><span> </span><a href="Game.html#makeASolve"><span class="hs-identifier hs-var">makeASolve</span></a><span class="hs-special">)</span><span>
+</span><a name="line-27"></a><span class="hs-keyword">import</span><span> </span><a href="Player.html"><span class="hs-identifier">Player</span></a><span>
+</span><a name="line-28"></a><span class="hs-keyword">import</span><span> </span><a href="Storage.html"><span class="hs-identifier">Storage</span></a><span>
+</span><a name="line-29"></a><span class="hs-keyword">import</span><span> </span><span class="hs-identifier">Data</span><span class="hs-operator">.</span><span class="hs-identifier">Maybe</span><span>
+</span><a name="line-30"></a><span class="hs-keyword">import</span><span> </span><span class="hs-identifier">Data</span><span class="hs-operator">.</span><span class="hs-identifier">Aeson</span><span>
+</span><a name="line-31"></a><span class="hs-keyword">import</span><span> </span><span class="hs-identifier">Data</span><span class="hs-operator">.</span><span class="hs-identifier">Aeson</span><span class="hs-operator">.</span><span class="hs-identifier">TH</span><span>
+</span><a name="line-32"></a><span class="hs-keyword">import</span><span> </span><span class="hs-identifier">Data</span><span class="hs-operator">.</span><span class="hs-identifier">List</span><span>
+</span><a name="line-33"></a><span class="hs-keyword">import</span><span> </span><span class="hs-identifier">Network</span><span class="hs-operator">.</span><span class="hs-identifier">Wai</span><span>
+</span><a name="line-34"></a><span class="hs-keyword">import</span><span> </span><span class="hs-identifier">Network</span><span class="hs-operator">.</span><span class="hs-identifier">Wai</span><span class="hs-operator">.</span><span class="hs-identifier">Handler</span><span class="hs-operator">.</span><span class="hs-identifier">Warp</span><span>
+</span><a name="line-35"></a><span class="hs-keyword">import</span><span> </span><span class="hs-identifier">Servant</span><span>
+</span><a name="line-36"></a><span>
+</span><a name="line-37"></a><span class="hs-keyword">import</span><span> </span><span class="hs-identifier">Control</span><span class="hs-operator">.</span><span class="hs-identifier">Monad</span><span class="hs-operator">.</span><span class="hs-identifier">IO</span><span class="hs-operator">.</span><span class="hs-identifier">Class</span><span>
+</span><a name="line-38"></a><span class="hs-keyword">import</span><span> </span><span class="hs-identifier">Control</span><span class="hs-operator">.</span><span class="hs-identifier">Monad</span><span> </span><span class="hs-special">(</span><span class="hs-identifier hs-var">when</span><span class="hs-special">)</span><span>
+</span><a name="line-39"></a><span>
+</span><a name="line-40"></a><span class="hs-comment">-- ############################################################################</span><span>
+</span><a name="line-41"></a><span class="hs-comment">-- Messages</span><span>
+</span><a name="line-42"></a><span>
+</span><a name="line-43"></a><span class="hs-keyword">data</span><span> </span><a name="TurnMessage"><a href="Api.html#TurnMessage"><span class="hs-identifier">TurnMessage</span></a></a><span> </span><span class="hs-glyph">=</span><span> </span><a name="TurnMessage"><a href="Api.html#TurnMessage"><span class="hs-identifier">TurnMessage</span></a></a><span>
+</span><a name="line-44"></a><span>  </span><span class="hs-special">{</span><span> </span><a name="playerId"><a href="Api.html#playerId"><span class="hs-identifier">playerId</span></a></a><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-identifier hs-type">Int</span><span>
+</span><a name="line-45"></a><span>  </span><span class="hs-special">,</span><span> </span><a name="playerSecret"><a href="Api.html#playerSecret"><span class="hs-identifier">playerSecret</span></a></a><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-identifier hs-type">String</span><span>
+</span><a name="line-46"></a><span>  </span><span class="hs-special">,</span><span> </span><a name="guess"><a href="Api.html#guess"><span class="hs-identifier">guess</span></a></a><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-identifier hs-type">String</span><span>
+</span><a name="line-47"></a><span>  </span><span class="hs-special">}</span><span>
+</span><a name="line-48"></a><span class="hs-operator">$</span><span class="hs-special">(</span><a href="#local-6989586621679149860"><span class="hs-identifier hs-var">deriveJSON</span></a><span> </span><a href="#local-6989586621679149860"><span class="hs-identifier hs-var">defaultOptions</span></a><span> </span><span class="hs-char">''TurnMessage)
+
+-- ############################################################################
+-- API
+
+type API = &quot;games&quot; :&gt; Get '[JSON] [Game] -- Get all games
+        :&lt;|&gt; &quot;games&quot; :&gt; QueryParam &quot;word&quot; String :&gt; Post '[JSON] Game -- Create session
+        :&lt;|&gt; &quot;games&quot; :&gt; Capture &quot;gid&quot; Int :&gt; Get '[JSON] Game -- Get single game
+        :&lt;|&gt; &quot;games&quot; :&gt; Capture &quot;gid&quot; Int :&gt; ReqBody '[JSON] TurnMessage :&gt; Put '[JSON] Game -- make a Turn
+        :&lt;|&gt; &quot;games&quot; :&gt; Capture &quot;gid&quot; Int :&gt; &quot;solve&quot; :&gt; ReqBody '[JSON] TurnMessage :&gt; Put '[JSON] Game -- solve Game
+        :&lt;|&gt; &quot;games&quot; :&gt; Capture &quot;gid&quot; Int :&gt; &quot;players&quot; :&gt; Post '[JSON] Player -- create Player
+
+
+server :: Server API
+server = allGames
+    :&lt;|&gt; createGame
+    :&lt;|&gt; getGame
+    :&lt;|&gt; turnGame
+    :&lt;|&gt; solveGame
+    :&lt;|&gt; createPlayer
+
+    where allGames :: Handler [Game]
+          allGames = liftIO loadGames
+
+          createGame :: Maybe String -&gt; Handler Game
+          createGame Nothing = throwError err400 { errBody = &quot;Parameter word missing&quot; }
+          createGame word = do
+            games &lt;- liftIO loadGames
+            let ids = map gameId games
+            let game = fromJust (newGame (if null ids then 0 else maximum ids + 1) $ fromJust word)
+            liftIO $ saveGame game
+            return game
+
+          getGame :: Int -&gt; Handler Game
+          getGame = getGameHandled
+
+          turnGame :: Int -&gt; TurnMessage -&gt; Handler Game
+          turnGame gid change = do
+            game &lt;- liftIO $ loadGame gid
+            case game of
+              Nothing -&gt; throwError err404 { errBody = &quot;There is no game with this ID&quot; }
+              Just g -&gt; do
+                when (length (Api.guess change) /= 1) $ throwError err400 { errBody = &quot;You can only guess a single char!&quot; }
+                player &lt;- getPlayerHandled g (Api.playerId change) (Api.playerSecret change)
+                let game = fst (makeATurn player (head $ Api.guess change) g)
+                liftIO $ saveGame game
+                return game
+
+
+          solveGame :: Int -&gt; TurnMessage -&gt; Handler Game
+          solveGame gid change = do
+            game &lt;- liftIO $ loadGame gid
+            case game of
+              Nothing -&gt; throwError err404 { errBody = &quot;There is no game with this ID&quot; }
+              Just g -&gt; do
+                player &lt;- getPlayerHandled g (Api.playerId change) (Api.playerSecret change)
+                let game = fst (makeASolve player (Api.guess change) g)
+                liftIO $ saveGame game
+                return game
+
+          createPlayer :: Int -&gt; Handler Player
+          createPlayer gid = do
+            game &lt;- liftIO $ loadGame gid
+            case game of
+              Nothing -&gt; throwError err404 { errBody = &quot;There is no game with this ID&quot; }
+              Just g -&gt; do
+                let ids = map Player.playerId (players g)
+                let new = newPlayer (if null ids then 0 else maximum ids + 1)
+                liftIO $ saveGame g { players= players g ++ [new] }
+                return new
+
+-- ############################################################################
+-- Boilerplate
+
+-- | Loads a game or throws 404 if it could not be found
+getGameHandled :: Int -&gt; Handler Game
+getGameHandled gid = do
+  game &lt;- liftIO $ loadGame gid
+  case game of
+    Nothing -&gt; throwError err404 { errBody = &quot;There is no game with this ID&quot; }
+    Just g -&gt; return g
+
+-- | Fetches the player from the game or throws an error
+getPlayerHandled :: Game -&gt; Int -&gt; String -&gt; Handler Player
+getPlayerHandled game pid key = do
+  let player = getPlayerForId (players game) pid key
+  case player of
+    Nothing -&gt; throwError err401 { errBody = &quot;There is no player with this ID or credentials did not match&quot; }
+    Just p -&gt; return p
+
+-- ############################################################################
+-- Boilerplate
+
+-- | Creates the application serving the api
+app :: Application -- ^ application being able to be executed
+app = serve api server
+
+api :: Proxy API
+api = Proxy
+
+-- | Starts the application on Port 8080
+startApp :: IO () -- ^ Opens port 8080 and serves api
+startApp = run 8080 app
+</span></pre></body></html>
