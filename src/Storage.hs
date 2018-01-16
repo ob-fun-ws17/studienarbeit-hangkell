@@ -15,11 +15,14 @@ module Storage where
 
 import Game (Game (..))
 import Control.Exception
-import System.IO
 import Data.List (find)
 
 import Control.Monad.IO.Class
 import Control.Monad (when)
+
+import System.IO hiding (readFile)
+import Prelude hiding (readFile)
+import System.IO.Strict (readFile)
 
 -- | The storage to keep all game sessions
 gameFile :: FilePath

@@ -23,6 +23,7 @@ library
                      , warp
                      , monad-control
                      , directory
+                     , strict
   default-language:    Haskell2010
 
 executable Hangkell-exe
@@ -32,6 +33,7 @@ executable Hangkell-exe
   build-depends:       base
                      , Hangkell
                      , directory
+                     , strict
   default-language:    Haskell2010
 
 test-suite Hangkell-test
